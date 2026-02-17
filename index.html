@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lắc Lì Xì Bính Ngọ 2026</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            background: linear-gradient(45deg, #8e0000, #b71c1c, #d32f2f, #b71c1c);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            height: 100vh; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-family: sans-serif; overflow: hidden; color: gold;
+            text-align: center;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #fw-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .horse {
+            font-size: 80px;
+            margin-bottom: 10px;
+            display: inline-block;
+            animation: horseMove 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px gold);
+        }
+
+        @keyframes horseMove {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .lixi {
+            width: 150px; height: 230px; background: #d32f2f;
+            border: 4px solid #ffca28; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 50px; cursor: pointer; position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+
+        .disabled { filter: grayscale(1); cursor: not-allowed; opacity: 0.7; }
+        .shaking { animation: shake 0.1s infinite; }
+        
+        @keyframes shake {
+            0% { transform: translate(2px, 1px) rotate(0deg); }
+            50% { transform: translate(-1px, -2px) rotate(-1deg); }
+            100% { transform: translate(1px, 2px) rotate(1deg); }
+        }
+
+        #popup {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); background: white;
+            padding: 25px; border-radius: 15px; color: #333; 
+            width: 80%; max-width: 350px; box-shadow: 0 0 50px black; z-index: 100;
+        }
+        #popup h2 { color: red; margin-top: 0; }
+        #money { color: #d32f2f; font-size: 35px; margin: 10px 0; }
+        #wish { font-style: italic; color: #555; margin-bottom: 20px; display: block; font-weight: bold; }
+        
+        .status-msg { margin-top: 20px; font-weight: bold; height: auto; text-shadow: 1px 1px 5px black; padding: 0 10px; }
+        .highlight-money { color: #fff; font-size: 1.2em; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <canvas id="fw-canvas"></canvas>
+
+    <div class="content-wrapper">
+        <div class="horse">🐎</div>
+        <h1 style="text-shadow: 2px 2px 10px black;">LẮC LÌ XÌ BÍNH NGỌ 2026</h1>
+        
+        <div class="lixi" id="lixi" onclick="handleLixiClick()">🧧</div>
+        
+        <p class="status-msg" id="statusMsg">Chạm để lắc và nhận lộc!</p>
+    </div>
+
+    <div id="popup">
+        <h2>CHÚC MỪNG!</h2>
+        <p>Bạn nhận được:</p>
+        <h1 id="money">0đ</h1>
+        <span id="wish">Lời chúc ở đây</span>
+        <button onclick="closePopup()" style="padding:10px 20px; background:red; color:white; border:none; border-radius:5px; cursor:pointer; font-weight: bold;">ĐÓNG</button>
+    </div>
+
+    <!-- <button onclick="localStorage.clear(); location.reload();" style="position:fixed; bottom:10px; right:10px; opacity:0.3; font-size:10px; z-index: 1000;">RESET TEST</button> -->
+
+    <script>
+        // --- LOGIC PHÁO HOA ---
+        const canvas = document.getElementById('fw-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                this.velocity = { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 };
+                this.alpha = 1;
+                this.friction = 0.95;
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                this.velocity.x *= this.friction;
+                this.velocity.y *= this.friction;
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= 0.01;
+            }
+        }
+
+        function createFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height * 0.7;
+            const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            for (let i = 0; i < 30; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function animateFW() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                if (p.alpha > 0) { p.update(); p.draw(); } 
+                else { particles.splice(i, 1); }
+            });
+            if (Math.random() < 0.05) createFirework();
+            requestAnimationFrame(animateFW);
+        }
+        animateFW();
+
+        // --- LOGIC LÌ XÌ ---
+        const lixi = document.getElementById('lixi');
+        const statusMsg = document.getElementById('statusMsg');
+        const popup = document.getElementById('popup');
+        const moneyTxt = document.getElementById('money');
+        const wishTxt = document.getElementById('wish');
+
+        window.onload = () => {
+            const savedMoney = localStorage.getItem('savedMoney');
+            if (localStorage.getItem('hasShaken') && savedMoney) {
+                lockLixi(savedMoney);
+            }
+        };
+
+        function lockLixi(money) {
+            lixi.classList.add('disabled');
+            lixi.onclick = null;
+            // Cập nhật dòng chữ thông báo kèm số tiền đã nhận
+            statusMsg.innerHTML = `Bạn đã nhận <span style="text-decoration: none; color: white;" class="highlight-money">${money}</span> rồi, hẹn năm sau nhé!`;
+            statusMsg.style.color = "#ffca28";
+        }
+
+        function handleLixiClick() {
+            if (localStorage.getItem('hasShaken')) return;
+
+            if ("vibrate" in navigator) {
+                navigator.vibrate([100, 50, 100, 50, 400]);
+            }
+
+            lixi.classList.add('shaking');
+            statusMsg.innerText = "Đang lắc lộc...";
+
+            setTimeout(() => {
+                lixi.classList.remove('shaking');
+                
+                const gifts = ["5.000đ","10.000đ", "20.000đ", "50.000đ", "100.000đ","Hẹn lần sau"];
+                const wishes = [
+                    "Chúc bạn năm mới Vạn Sự Như Ý!",
+                    "Tấn tài tấn lộc, công danh rạng rỡ!",
+                    "Sức khỏe dồi dào, hạnh phúc đong đầy!",
+                    "Mã đáo thành công, vạn dặm bình an!",
+                    "Tiền vào như nước, thăng tiến vèo vèo!",
+                    "Một năm mới bình an, hỷ sự lâm môn!"
+                ];
+
+                const randomGift = gifts[Math.floor(Math.random() * gifts.length)];
+                const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
+
+                moneyTxt.innerText = randomGift;
+                wishTxt.innerText = "“" + randomWish + "”";
+                
+                popup.style.display = 'block';
+                
+                // Lưu trạng thái và số tiền vào localStorage
+                localStorage.setItem('hasShaken', 'true');
+                localStorage.setItem('savedMoney', randomGift);
+                
+                lockLixi(randomGift);
+
+                if ("vibrate" in navigator) navigator.vibrate(500);
+            }, 1200);
+        }
+
+        function closePopup() {
+            popup.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
