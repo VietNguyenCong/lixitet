@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lắc Lì Xì Bính Ngọ 2026</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(45deg, #8e0000, #b71c1c, #d32f2f, #b71c1c);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            color: gold;
+            text-align: center;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        #fw-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        .horse {
+            font-size: 60px;
+            display: inline-block;
+            animation: horseMove 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px gold);
+        }
+
+        @keyframes horseMove {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-5deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(5deg);
+            }
+        }
+
+        .lixi {
+            width: 120px;
+            height: 180px;
+            background: #d32f2f;
+            border: 4px solid #ffca28;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            margin: 20px auto;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            transition: 0.3s;
+        }
+
+        .shaking {
+            animation: shake 0.1s infinite;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(2px, 1px) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(-1px, -2px) rotate(-1deg);
+            }
+
+            100% {
+                transform: translate(1px, 2px) rotate(1deg);
+            }
+        }
+
+        /* DANH SÁCH LỊCH SỬ */
+        .history-container {
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 202, 40, 0.3);
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+
+        .history-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid gold;
+            padding-bottom: 5px;
+        }
+
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 5px;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .history-item .index {
+            background: gold;
+            color: #b71c1c;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .history-item .info {
+            display: flex;
+            justify-content: space-between;
+            flex-grow: 1;
+            align-items: center;
+        }
+
+        .history-item span.money {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .history-item span.time {
+            color: #ccc;
+            font-size: 0.8em;
+        }
+
+        /* POPUP */
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            color: #333;
+            width: 85%;
+            max-width: 350px;
+            box-shadow: 0 0 50px black;
+            z-index: 100;
+        }
+
+        #popup h2 {
+            color: red;
+            margin: 0;
+        }
+
+        #money-result {
+            color: #d32f2f;
+            font-size: 32px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        #wish-result {
+            font-style: italic;
+            color: #555;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .btn-close {
+            padding: 10px 25px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-clear {
+            margin-top: 15px;
+            background: none;
+            border: 1px solid #ffca28;
+            color: #ffca28;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="fw-canvas"></canvas>
+
+    <div class="content-wrapper">
+        <div class="horse">🐎</div>
+        <h1 style="text-shadow: 2px 2px 10px black; font-size: 24px;">LẮC LÌ XÌ BÍNH NGỌ 2026</h1>
+
+        <div class="lixi" id="lixi" onclick="handleLixiClick()">🧧</div>
+
+        <p id="statusMsg" style="font-weight: bold;">Chạm vào bao lì xì để lắc lộc!</p>
+
+        <div class="history-container">
+            <div class="history-title">📜 NHẬT KÝ NHẬN LỘC</div>
+            <ul class="history-list" id="historyList">
+            </ul>
+            <button class="btn-clear" onclick="clearHistory()">Xóa lịch sử</button>
+        </div>
+    </div>
+
+    <div id="popup">
+        <h2>CHÚC MỪNG!</h2>
+        <p>Bạn vừa nhận được:</p>
+        <div id="money-result">0đ</div>
+        <span id="wish-result" style="font-weight: bold;">Lời chúc</span>
+        <button class="btn-close" onclick="closePopup()">Tuyệt vời!</button>
+    </div>
+
+    <script>
+        // --- PHÁO HOA ---
+        const canvas = document.getElementById('fw-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                this.velocity = { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 };
+                this.alpha = 1; this.friction = 0.95;
+            }
+            draw() { ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); }
+            update() { this.velocity.x *= this.friction; this.velocity.y *= this.friction; this.x += this.velocity.x; this.y += this.velocity.y; this.alpha -= 0.01; }
+        }
+        function animateFW() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => { if (p.alpha > 0) { p.update(); p.draw(); } else { particles.splice(i, 1); } });
+            if (Math.random() < 0.05) {
+                const x = Math.random() * canvas.width, y = Math.random() * canvas.height * 0.5, color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                for (let i = 0; i < 30; i++) particles.push(new Particle(x, y, color));
+            }
+            requestAnimationFrame(animateFW);
+        }
+        animateFW();
+
+        // --- LOGIC LẮC LÌ XÌ & LỊCH SỬ ---
+        const lixi = document.getElementById('lixi');
+        const historyList = document.getElementById('historyList');
+        const popup = document.getElementById('popup');
+        const moneyResult = document.getElementById('money-result');
+        const wishResult = document.getElementById('wish-result');
+        const statusMsg = document.getElementById('statusMsg');
+
+        window.onload = loadHistory;
+
+        function handleLixiClick() {
+            if (lixi.classList.contains('shaking')) return;
+            if ("vibrate" in navigator) navigator.vibrate([100, 50, 100, 50, 400]);
+
+            lixi.classList.add('shaking');
+            statusMsg.innerText = "Đang lắc lộc...";
+
+            setTimeout(() => {
+                lixi.classList.remove('shaking');
+                const gifts = ["5.000đ", "10.000đ", "20.000đ", "50.000đ", "100.000đ", "Hẹn lần sau!"];
+                const wishes = ["Vạn sự như ý!",
+                    "Phát tài phát lộc!",
+                    "Sức khỏe dồi dào!",
+                    "Mã đéo thành công!"];
+
+                const randomGift = gifts[Math.floor(Math.random() * gifts.length)];
+                const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
+
+                moneyResult.innerText = randomGift;
+                wishResult.innerText = `“${randomWish}”`;
+                popup.style.display = 'block';
+
+                saveToHistory(randomGift);
+                statusMsg.innerText = "Lắc thêm lần nữa để nhận thêm lộc!";
+                if ("vibrate" in navigator) navigator.vibrate(500);
+            }, 1200);
+        }
+
+        function saveToHistory(amount) {
+            let history = JSON.parse(localStorage.getItem('lixiHistory')) || [];
+            const now = new Date();
+            const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            // Thêm lượt lắc mới vào đầu mảng
+            history.unshift({ amount, time: timeStr });
+            localStorage.setItem('lixiHistory', JSON.stringify(history));
+
+            renderHistory(history);
+        }
+
+        function loadHistory() {
+            let history = JSON.parse(localStorage.getItem('lixiHistory')) || [];
+            renderHistory(history);
+        }
+
+        function renderHistory(history) {
+            // Hiển thị số thứ tự dựa trên vị trí thực tế (lần lắc thứ mấy)
+            // Vì chúng ta unshift (thêm vào đầu), nên lượt lắc thứ N sẽ có index là 0
+            // Số thứ tự = Tổng số phần tử - chỉ số index
+            const total = history.length;
+            historyList.innerHTML = history.map((item, index) => `
+                <li class="history-item">
+                    <div class="index">${total - index}</div>
+                    <div class="info">
+                        <span class="money">${item.amount}</span>
+                        <span class="time">${item.time}</span>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function clearHistory() {
+            if (confirm("Bạn muốn xóa hết nhật ký nhận lộc?")) {
+                localStorage.removeItem('lixiHistory');
+                renderHistory([]);
+            }
+        }
+        
+        function closePopup() { popup.style.display = 'none'; }
+    </script>
+
+</body>
+
+</html>
